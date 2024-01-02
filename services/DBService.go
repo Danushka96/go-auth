@@ -1,4 +1,4 @@
-package main
+package services
 
 import (
 	"context"
@@ -9,8 +9,7 @@ import (
 
 const uri = "mongodb://localhost"
 
-// Our implementation logic for connecting to MongoDB
-func getDatabase() *mongo.Database {
+func GetDatabase() *mongo.Database {
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 	opts := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
 

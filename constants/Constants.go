@@ -1,4 +1,4 @@
 package constants
 
-const DB = "go-auth"
+const DB = "go-auth-service"
 const UsersCollection = "users"

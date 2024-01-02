@@ -1,9 +1,10 @@
-package main
+package auth_service
 
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"go-auth/constants"
+	"go-auth/services"
 	"go-auth/types"
 	"go-auth/utils"
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,10 +15,10 @@ import (
 var userRepository *mongo.Collection
 
 func init() {
-	userRepository = getDatabase().Collection(constants.UsersCollection)
+	userRepository = services.GetDatabase().Collection(constants.UsersCollection)
 }
 
-func registerUser(context *gin.Context) {
+func RegisterUser(context *gin.Context) {
 	var req types.RegisterUserRequest
 	if err := context.BindJSON(&req); err != nil {
 		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
@@ -42,7 +43,7 @@ func registerUser(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"message": "Inserted with id"})
 }
 
-func loginUser(context *gin.Context) {
+func LoginUser(context *gin.Context) {
 	var req types.LoginUserRequest
 	if err := context.BindJSON(&req); err != nil {
 		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
@@ -63,5 +64,10 @@ func loginUser(context *gin.Context) {
 		return
 	}
 
-	context.JSON(http.StatusBadRequest, gin.H{"message": "User logged in"})
+	token, err := services.GenerateToken(currentUser.Id)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+	}
+
+	context.JSON(http.StatusOK, gin.H{"message": token})
 }
